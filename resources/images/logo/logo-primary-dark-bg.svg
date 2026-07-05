@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 96" width="340" height="96">
+  <polygon points="74,48 61,71 35,71 22,48 35,25 61,25" fill="#FF6A13"></polygon>
+  <polyline points="38,50 46,58 62,38" fill="none" stroke="#14181B" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"></polyline>
+  <text x="116" y="65" font-family="&#39;Space Grotesk&#39;, &#39;Arial&#39;, sans-serif" font-size="46" font-weight="700" letter-spacing="-1" fill="#F4F6F7">LocAtivo</text>
+</svg>
