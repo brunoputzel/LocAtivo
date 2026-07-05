@@ -38,7 +38,7 @@ No ecossistema PHP, o Composer cumpre o papel equivalente ao Maven em Java: reso
 
 ## Fora do escopo desta versão
 
-Os itens "Painel" (dashboard com indicadores) e "Financeiro" completo estão ocultos do menu por enquanto. As specs correspondentes existem em `docs/specs/frontend/02-dashboard-ui.feature.md` e `docs/specs/frontend/08-financeiro-ui.feature.md`.
+Os itens "Painel" (dashboard com indicadores) e "Financeiro" completo estão ocultos do menu por enquanto.
 
 A estrutura de dados de cobrança já existe e é usada no encerramento de contrato, mas a tela de gestão financeira ainda não foi implementada nem ligada ao menu. Quando as rotas e componentes dessas duas áreas existirem, eles continuam acessíveis por URL direta. Só a entrada no menu lateral foi removida.
 
