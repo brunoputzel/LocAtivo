@@ -18,9 +18,13 @@ class ContratoForm extends Component
 
     public string $buscaAtivo = '';
 
+    public bool $painelAtivoAberto = false;
+
     public ?int $clienteId = null;
 
     public string $buscaCliente = '';
+
+    public bool $painelClienteAberto = false;
 
     public string $dataInicio = '';
 
@@ -45,14 +49,29 @@ class ContratoForm extends Component
     #[On('contrato-form-novo')]
     public function novo(): void
     {
-        $this->reset(['ativoId', 'buscaAtivo', 'clienteId', 'buscaCliente', 'dataInicio', 'dataFim', 'valorDiaria', 'observacoes']);
+        $this->reset([
+            'ativoId', 'buscaAtivo', 'painelAtivoAberto',
+            'clienteId', 'buscaCliente', 'painelClienteAberto',
+            'dataInicio', 'dataFim', 'valorDiaria', 'observacoes',
+        ]);
         $this->resetErrorBag();
+    }
+
+    public function abrirPainelAtivo(): void
+    {
+        $this->painelAtivoAberto = true;
+    }
+
+    public function fecharPainelAtivo(): void
+    {
+        $this->painelAtivoAberto = false;
     }
 
     public function selecionarAtivo(int $ativoId): void
     {
         $this->ativoId = $ativoId;
         $this->buscaAtivo = '';
+        $this->painelAtivoAberto = false;
 
         // só sugestão pro campo - o usuário ainda pode editar antes de salvar
         $valorReferencia = Ativo::find($ativoId)?->valor_diaria_referencia;
@@ -67,10 +86,21 @@ class ContratoForm extends Component
         $this->ativoId = null;
     }
 
+    public function abrirPainelCliente(): void
+    {
+        $this->painelClienteAberto = true;
+    }
+
+    public function fecharPainelCliente(): void
+    {
+        $this->painelClienteAberto = false;
+    }
+
     public function selecionarCliente(int $clienteId): void
     {
         $this->clienteId = $clienteId;
         $this->buscaCliente = '';
+        $this->painelClienteAberto = false;
     }
 
     public function limparClienteSelecionado(): void

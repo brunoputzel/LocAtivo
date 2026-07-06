@@ -27,5 +27,16 @@ class DatabaseSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
+
+        // não existe TipoAtivo no schema atual (Ativo.tipo é texto livre),
+        // então a ordem começa direto em Ativo
+        $this->call([
+            AtivoSeeder::class,
+            ClienteSeeder::class,
+            ContratoSeeder::class,
+            ChecklistSeeder::class,
+            OrdemDeServicoSeeder::class,
+            AlertaManutencaoSeeder::class,
+        ]);
     }
 }

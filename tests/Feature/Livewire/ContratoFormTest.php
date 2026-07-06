@@ -24,8 +24,36 @@ class ContratoFormTest extends TestCase
 
         Livewire::actingAs($gestor)
             ->test(ContratoForm::class)
+            ->call('abrirPainelAtivo')
             ->assertSee('Ativo Disponível')
             ->assertDontSee('Ativo em Locação');
+    }
+
+    public function test_painel_de_ativo_fica_fechado_ate_o_campo_ganhar_foco(): void
+    {
+        $gestor = User::factory()->perfil(PerfilUsuario::GESTOR)->create();
+        Ativo::factory()->create(['nome' => 'Ativo Disponível', 'status' => StatusAtivo::DISPONIVEL]);
+
+        Livewire::actingAs($gestor)
+            ->test(ContratoForm::class)
+            ->assertSet('painelAtivoAberto', false)
+            ->assertDontSee('Ativo Disponível')
+            ->call('abrirPainelAtivo')
+            ->assertSet('painelAtivoAberto', true)
+            ->assertSee('Ativo Disponível');
+    }
+
+    public function test_selecionar_ativo_fecha_o_painel(): void
+    {
+        $gestor = User::factory()->perfil(PerfilUsuario::GESTOR)->create();
+        $ativo = Ativo::factory()->create(['status' => StatusAtivo::DISPONIVEL]);
+
+        Livewire::actingAs($gestor)
+            ->test(ContratoForm::class)
+            ->call('abrirPainelAtivo')
+            ->assertSet('painelAtivoAberto', true)
+            ->call('selecionarAtivo', $ativo->id)
+            ->assertSet('painelAtivoAberto', false);
     }
 
     public function test_busca_de_cliente_filtra_por_nome_ao_digitar(): void
@@ -36,6 +64,7 @@ class ContratoFormTest extends TestCase
 
         Livewire::actingAs($gestor)
             ->test(ContratoForm::class)
+            ->call('abrirPainelCliente')
             ->set('buscaCliente', 'João')
             ->assertSee('João da Silva')
             ->assertDontSee('Maria Souza');

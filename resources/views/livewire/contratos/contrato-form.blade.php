@@ -3,7 +3,7 @@
         <h2 class="font-display text-lg font-semibold text-ink">Novo contrato</h2>
 
         <div class="mt-6 space-y-4">
-            <div x-data="{ painelAberto: false }">
+            <div wire:key="ativo-busca-wrapper">
                 <x-input-label value="Ativo" />
 
                 @if ($ativoSelecionado)
@@ -17,42 +17,39 @@
                         </button>
                     </div>
                 @else
-                    <div class="relative mt-1">
+                    <div class="relative mt-1" x-data x-on:click.outside="$wire.fecharPainelAtivo()">
                         <input
                             type="text"
                             wire:model.live.debounce.300ms="buscaAtivo"
-                            x-on:focus="painelAberto = true"
+                            wire:focus="abrirPainelAtivo"
                             placeholder="Buscar ativo disponível por nome..."
                             class="block w-full rounded-md border-border focus:border-brand focus:ring-brand text-sm"
                         >
 
-                        <div
-                            x-show="painelAberto"
-                            x-on:click.outside="painelAberto = false"
-                            x-cloak
-                            class="absolute z-10 mt-1 w-full bg-surface-card border border-border rounded-md shadow-lg max-h-60 overflow-auto"
-                        >
-                            @forelse ($ativosDisponiveis as $a)
-                                <button
-                                    type="button"
-                                    wire:click="selecionarAtivo({{ $a->id }})"
-                                    x-on:click="painelAberto = false"
-                                    class="block w-full text-left px-3 py-2 text-sm hover:bg-surface"
-                                >
-                                    {{ $a->nome }} — {{ $a->tipo }} —
-                                    <span class="font-mono">{{ $a->numero_serie }}</span>
-                                </button>
-                            @empty
-                                <p class="px-3 py-2 text-sm text-ink-muted">Nenhum ativo disponível encontrado.</p>
-                            @endforelse
-                        </div>
+                        @if ($painelAtivoAberto)
+                            <div class="absolute z-10 mt-1 w-full bg-surface-card border border-border rounded-md shadow-lg max-h-60 overflow-auto">
+                                @forelse ($ativosDisponiveis as $a)
+                                    <button
+                                        type="button"
+                                        wire:key="ativo-opcao-{{ $a->id }}"
+                                        wire:click="selecionarAtivo({{ $a->id }})"
+                                        class="block w-full text-left px-3 py-2 text-sm hover:bg-surface"
+                                    >
+                                        {{ $a->nome }} — {{ $a->tipo }} —
+                                        <span class="font-mono">{{ $a->numero_serie }}</span>
+                                    </button>
+                                @empty
+                                    <p wire:key="ativo-vazio" class="px-3 py-2 text-sm text-ink-muted">Nenhum ativo disponível encontrado.</p>
+                                @endforelse
+                            </div>
+                        @endif
                     </div>
                 @endif
 
                 <x-input-error :messages="$errors->get('ativoId')" class="mt-2" />
             </div>
 
-            <div x-data="{ painelAberto: false }">
+            <div wire:key="cliente-busca-wrapper">
                 <x-input-label value="Cliente" />
 
                 @if ($clienteSelecionado)
@@ -66,35 +63,32 @@
                         </button>
                     </div>
                 @else
-                    <div class="relative mt-1">
+                    <div class="relative mt-1" x-data x-on:click.outside="$wire.fecharPainelCliente()">
                         <input
                             type="text"
                             wire:model.live.debounce.300ms="buscaCliente"
-                            x-on:focus="painelAberto = true"
+                            wire:focus="abrirPainelCliente"
                             placeholder="Buscar cliente por nome..."
                             class="block w-full rounded-md border-border focus:border-brand focus:ring-brand text-sm"
                         >
 
-                        <div
-                            x-show="painelAberto"
-                            x-on:click.outside="painelAberto = false"
-                            x-cloak
-                            class="absolute z-10 mt-1 w-full bg-surface-card border border-border rounded-md shadow-lg max-h-60 overflow-auto"
-                        >
-                            @forelse ($clientesFiltrados as $c)
-                                <button
-                                    type="button"
-                                    wire:click="selecionarCliente({{ $c->id }})"
-                                    x-on:click="painelAberto = false"
-                                    class="block w-full text-left px-3 py-2 text-sm hover:bg-surface"
-                                >
-                                    {{ $c->nome }} —
-                                    <span class="font-mono">{{ $c->cpf_cnpj }}</span>
-                                </button>
-                            @empty
-                                <p class="px-3 py-2 text-sm text-ink-muted">Nenhum cliente encontrado.</p>
-                            @endforelse
-                        </div>
+                        @if ($painelClienteAberto)
+                            <div class="absolute z-10 mt-1 w-full bg-surface-card border border-border rounded-md shadow-lg max-h-60 overflow-auto">
+                                @forelse ($clientesFiltrados as $c)
+                                    <button
+                                        type="button"
+                                        wire:key="cliente-opcao-{{ $c->id }}"
+                                        wire:click="selecionarCliente({{ $c->id }})"
+                                        class="block w-full text-left px-3 py-2 text-sm hover:bg-surface"
+                                    >
+                                        {{ $c->nome }} —
+                                        <span class="font-mono">{{ $c->cpf_cnpj }}</span>
+                                    </button>
+                                @empty
+                                    <p wire:key="cliente-vazio" class="px-3 py-2 text-sm text-ink-muted">Nenhum cliente encontrado.</p>
+                                @endforelse
+                            </div>
+                        @endif
                     </div>
                 @endif
 

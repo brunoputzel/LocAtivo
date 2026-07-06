@@ -10,15 +10,52 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class AtivoFactory extends Factory
 {
+    /**
+     * Marcas e modelos reais do mercado brasileiro de locação, por tipo de equipamento.
+     * 'tipo' é texto livre no schema atual (sem tabela própria), daqui sai o valor salvo.
+     */
+    private const CATALOGO = [
+        'Gerador' => [
+            'marcas' => ['Cummins', 'Branco', 'Toyama', 'Motomil', 'Stemac'],
+            'modelos' => ['C60D5', 'BD-6500CFE', 'TG3000CX', 'MG6000CVE', 'SS44'],
+        ],
+        'Compressor' => [
+            'marcas' => ['Chiaperini', 'Schulz', 'Pratik'],
+            'modelos' => ['CJ 10+ 100L', 'CSA 10/100', 'PSV 10ADI', 'MSV 20/300'],
+        ],
+        'Andaime' => [
+            'marcas' => ['Mills', 'Alfa Andaimes', 'Metaltec'],
+            'modelos' => ['Fachadeiro 1,50m', 'Torre H1', 'Multidirecional 2,00m'],
+        ],
+        'Compactador de solo' => [
+            'marcas' => ['Wacker Neuson', 'Dynapac', 'Mitsuda'],
+            'modelos' => ['BS 60-4s', 'LG 200', 'PC 65'],
+        ],
+        'Torre de iluminação' => [
+            'marcas' => ['Multiquip', 'Generac', 'VMB'],
+            'modelos' => ['TL-4000', 'MLT6SD3', 'TI-4x400'],
+        ],
+    ];
+
     public function definition(): array
     {
+        $tipo = fake()->randomElement(array_keys(self::CATALOGO));
+        $catalogo = self::CATALOGO[$tipo];
+
         return [
-            'nome' => fake()->randomElement(['Gerador', 'Compressor', 'Andaime']).' '.fake()->word(),
-            'tipo' => fake()->randomElement(['gerador', 'compressor', 'andaime']),
-            'modelo' => fake()->bothify('Modelo-####'),
+            'nome' => $tipo.' '.fake()->randomElement($catalogo['marcas']),
+            'tipo' => $tipo,
+            'modelo' => fake()->randomElement($catalogo['modelos']),
             'numero_serie' => fake()->unique()->bothify('SN-########'),
             'status' => StatusAtivo::DISPONIVEL,
-            'horimetro' => fake()->randomFloat(2, 0, 500),
+            // 30% zerado (equipamento novo), o resto com uso variado
+            'horimetro' => fake()->boolean(30) ? 0 : fake()->randomFloat(2, 20, 3000),
+            'valor_diaria_referencia' => fake()->randomFloat(2, 80, 600),
         ];
+    }
+
+    public function emManutencao(): static
+    {
+        return $this->state(fn () => ['status' => StatusAtivo::EM_MANUTENCAO]);
     }
 }

@@ -22,3 +22,5 @@ yarn-error.log
 /.vscode
 /.zed
 /docs
+backup_laravel.sql
+*.sql
