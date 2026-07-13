@@ -28,8 +28,8 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // não existe TipoAtivo no schema atual (Ativo.tipo é texto livre),
-        // então a ordem começa direto em Ativo
+        // TipoAtivo é criado sob demanda pela AtivoFactory (firstOrCreate),
+        // não precisa de seeder próprio
         $this->call([
             AtivoSeeder::class,
             ClienteSeeder::class,

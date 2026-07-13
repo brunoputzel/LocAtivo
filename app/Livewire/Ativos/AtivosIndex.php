@@ -54,6 +54,7 @@ class AtivosIndex extends Component
     public function render()
     {
         $ativos = Ativo::query()
+            ->with('tipoAtivo')
             ->when($this->busca, fn ($query) => $query->where('nome', 'like', "%{$this->busca}%"))
             ->when($this->status, fn ($query) => $query->where('status', $this->status))
             ->latest()

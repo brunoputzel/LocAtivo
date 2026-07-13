@@ -44,14 +44,17 @@
                         x-on:livewire-upload-progress.window="progresso = $event.detail.progress"
                     >
                         <x-input-label for="fotos" value="Fotos do equipamento (até 10, opcional)" />
-                        <input
-                            type="file"
-                            id="fotos"
-                            wire:model="fotos"
-                            multiple
-                            accept="image/jpeg,image/png,image/webp"
-                            class="mt-1 block w-full text-sm text-ink-muted file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-brand file:text-white file:text-xs file:font-semibold file:uppercase"
-                        >
+                        <label class="mt-1 inline-flex items-center px-4 py-2 bg-brand hover:bg-brand-dark rounded-md font-semibold text-xs text-white uppercase tracking-widest transition cursor-pointer">
+                            Selecionar fotos
+                            <input
+                                type="file"
+                                id="fotos"
+                                wire:model="fotos"
+                                multiple
+                                accept="image/jpeg,image/png,image/webp"
+                                class="hidden"
+                            >
+                        </label>
                         <x-input-error :messages="$errors->get('fotos')" class="mt-2" />
                         <x-input-error :messages="$errors->get('fotos.*')" class="mt-2" />
 

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\StatusAtivo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Ativo extends Model
 {
@@ -12,7 +13,7 @@ class Ativo extends Model
 
     protected $fillable = [
         'nome',
-        'tipo',
+        'tipo_ativo_id',
         'modelo',
         'numero_serie',
         'foto_url',
@@ -28,6 +29,11 @@ class Ativo extends Model
             'horimetro' => 'decimal:2',
             'valor_diaria_referencia' => 'decimal:2',
         ];
+    }
+
+    public function tipoAtivo(): BelongsTo
+    {
+        return $this->belongsTo(TipoAtivo::class);
     }
 
     public function contratos()

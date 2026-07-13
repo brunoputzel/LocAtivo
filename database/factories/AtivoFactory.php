@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\StatusAtivo;
+use App\Models\TipoAtivo;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -12,7 +13,7 @@ class AtivoFactory extends Factory
 {
     /**
      * Marcas e modelos reais do mercado brasileiro de locação, por tipo de equipamento.
-     * 'tipo' é texto livre no schema atual (sem tabela própria), daqui sai o valor salvo.
+     * Cada chave vira (ou reaproveita, via firstOrCreate) um TipoAtivo de verdade.
      */
     private const CATALOGO = [
         'Gerador' => [
@@ -41,10 +42,11 @@ class AtivoFactory extends Factory
     {
         $tipo = fake()->randomElement(array_keys(self::CATALOGO));
         $catalogo = self::CATALOGO[$tipo];
+        $tipoAtivo = TipoAtivo::firstOrCreate(['nome' => $tipo]);
 
         return [
             'nome' => $tipo.' '.fake()->randomElement($catalogo['marcas']),
-            'tipo' => $tipo,
+            'tipo_ativo_id' => $tipoAtivo->id,
             'modelo' => fake()->randomElement($catalogo['modelos']),
             'numero_serie' => fake()->unique()->bothify('SN-########'),
             'status' => StatusAtivo::DISPONIVEL,

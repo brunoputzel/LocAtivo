@@ -8,6 +8,7 @@ use App\Exceptions\BusinessException;
 use App\Models\AlertaManutencao;
 use App\Models\Ativo;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class AtivoService
 {
@@ -24,6 +25,12 @@ class AtivoService
 
     public function atualizar(Ativo $ativo, array $dados): Ativo
     {
+        // foto trocada ou removida - apaga o arquivo antigo do storage antes
+        // de sobrescrever a coluna
+        if (array_key_exists('foto_url', $dados) && $ativo->foto_url && $ativo->foto_url !== $dados['foto_url']) {
+            Storage::disk('s3')->delete($ativo->foto_url);
+        }
+
         // horímetro passa pela checagem de limiar de manutenção - qualquer
         // caminho que atualize esse campo (API ou tela) reage igual
         if (array_key_exists('horimetro', $dados) && (float) $dados['horimetro'] !== (float) $ativo->horimetro) {
@@ -86,6 +93,10 @@ class AtivoService
         // aqui devolvemos uma mensagem de negócio em vez de erro de SQL
         if ($ativo->contratos()->exists()) {
             throw new BusinessException('Este ativo possui contratos no histórico e não pode ser excluído.');
+        }
+
+        if ($ativo->foto_url) {
+            Storage::disk('s3')->delete($ativo->foto_url);
         }
 
         $ativo->delete();

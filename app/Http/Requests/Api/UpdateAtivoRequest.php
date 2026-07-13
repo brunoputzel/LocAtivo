@@ -20,7 +20,7 @@ class UpdateAtivoRequest extends FormRequest
     {
         return [
             'nome' => ['sometimes', 'string', 'max:255'],
-            'tipo' => ['sometimes', 'string', 'max:255'],
+            'tipo_ativo_id' => ['sometimes', 'integer', 'exists:tipo_ativos,id'],
             'modelo' => ['sometimes', 'string', 'max:255'],
             'numero_serie' => [
                 'sometimes', 'string', 'max:255',

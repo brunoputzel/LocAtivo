@@ -19,7 +19,7 @@ class StoreAtivoRequest extends FormRequest
     {
         return [
             'nome' => ['required', 'string', 'max:255'],
-            'tipo' => ['required', 'string', 'max:255'],
+            'tipo_ativo_id' => ['required', 'integer', 'exists:tipo_ativos,id'],
             'modelo' => ['required', 'string', 'max:255'],
             'numero_serie' => ['required', 'string', 'max:255', 'unique:ativos,numero_serie'],
             'foto_url' => ['nullable', 'url', 'max:2048'],

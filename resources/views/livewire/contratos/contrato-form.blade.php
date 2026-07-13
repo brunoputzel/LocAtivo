@@ -9,7 +9,7 @@
                 @if ($ativoSelecionado)
                     <div class="mt-1 flex items-center justify-between rounded-md border border-border px-3 py-2 text-sm bg-surface">
                         <span>
-                            {{ $ativoSelecionado->nome }} — {{ $ativoSelecionado->tipo }} —
+                            {{ $ativoSelecionado->nome }} — {{ $ativoSelecionado->tipoAtivo?->nome }} —
                             <span class="font-mono">{{ $ativoSelecionado->numero_serie }}</span>
                         </span>
                         <button type="button" wire:click="limparAtivoSelecionado" class="text-xs text-brand hover:text-brand-dark">
@@ -35,7 +35,7 @@
                                         wire:click="selecionarAtivo({{ $a->id }})"
                                         class="block w-full text-left px-3 py-2 text-sm hover:bg-surface"
                                     >
-                                        {{ $a->nome }} — {{ $a->tipo }} —
+                                        {{ $a->nome }} — {{ $a->tipoAtivo?->nome }} —
                                         <span class="font-mono">{{ $a->numero_serie }}</span>
                                     </button>
                                 @empty

@@ -11,10 +11,56 @@
                 <x-input-error :messages="$errors->get('nome')" class="mt-2" />
             </div>
 
-            <div>
-                <x-input-label for="tipo" value="Tipo" />
-                <x-text-input wire:model.blur="tipo" id="tipo" class="block mt-1 w-full" placeholder="gerador, compressor, andaime..." />
-                <x-input-error :messages="$errors->get('tipo')" class="mt-2" />
+            <div wire:key="tipo-ativo-busca-wrapper">
+                <x-input-label value="Tipo" />
+
+                @if ($tipoAtivoSelecionado)
+                    <div class="mt-1 flex items-center justify-between rounded-md border border-border px-3 py-2 text-sm">
+                        <span class="text-ink">{{ $tipoAtivoSelecionado->nome }}</span>
+                        <button type="button" wire:click="limparTipoAtivoSelecionado" class="text-xs font-medium text-brand hover:text-brand-dark">
+                            Trocar
+                        </button>
+                    </div>
+                @else
+                    <div class="relative mt-1" x-data x-on:click.outside="$wire.fecharPainelTipoAtivo()">
+                        <input
+                            type="text"
+                            wire:model.live.debounce.300ms="buscaTipoAtivo"
+                            wire:focus="abrirPainelTipoAtivo"
+                            placeholder="Buscar tipo de ativo..."
+                            class="block w-full rounded-md border-border focus:border-brand focus:ring-brand text-sm"
+                        >
+
+                        @if ($painelTipoAtivoAberto)
+                            <div class="absolute z-10 mt-1 w-full bg-surface-card border border-border rounded-md shadow-lg max-h-60 overflow-auto">
+                                @forelse ($tiposAtivoFiltrados as $tipoAtivo)
+                                    <button
+                                        type="button"
+                                        wire:key="tipo-ativo-opcao-{{ $tipoAtivo->id }}"
+                                        wire:click="selecionarTipoAtivo({{ $tipoAtivo->id }})"
+                                        class="block w-full text-left px-3 py-2 text-sm hover:bg-surface"
+                                    >
+                                        {{ $tipoAtivo->nome }}
+                                    </button>
+                                @empty
+                                    <p wire:key="tipo-ativo-vazio" class="px-3 py-2 text-sm text-ink-muted">Nenhum tipo encontrado.</p>
+                                @endforelse
+
+                                @if ($podeCadastrarNovoTipoAtivo)
+                                    <button
+                                        type="button"
+                                        wire:key="tipo-ativo-cadastrar-novo"
+                                        wire:click="cadastrarTipoAtivo"
+                                        class="block w-full text-left px-3 py-2 text-sm font-medium text-brand hover:bg-surface border-t border-border"
+                                    >
+                                        + Cadastrar novo tipo: "{{ trim($buscaTipoAtivo) }}"
+                                    </button>
+                                @endif
+                            </div>
+                        @endif
+                    </div>
+                @endif
+                <x-input-error :messages="$errors->get('tipoAtivoId')" class="mt-2" />
             </div>
 
             <div>
@@ -43,30 +89,45 @@
                 <x-input-error :messages="$errors->get('valorDiariaReferencia')" class="mt-2" />
             </div>
 
-            <div class="sm:col-span-2" x-data="{ fotoUrl: @entangle('fotoUrl'), erroPreview: false }">
-                <x-input-label for="fotoUrl" value="Foto do equipamento (URL, opcional)" />
-                <x-text-input
-                    type="url"
-                    id="fotoUrl"
-                    x-model="fotoUrl"
-                    x-on:input="erroPreview = false"
-                    class="block mt-1 w-full"
-                    placeholder="https://..."
-                />
-                <x-input-error :messages="$errors->get('fotoUrl')" class="mt-2" />
+            <div class="sm:col-span-2" wire:loading.class="opacity-50" wire:target="novaFoto">
+                <x-input-label value="Foto do equipamento (opcional)" />
 
-                <template x-if="fotoUrl">
+                @if ($novaFoto && $novaFoto->isPreviewable())
                     <div class="mt-3">
-                        <img
-                            :src="fotoUrl"
-                            x-show="!erroPreview"
-                            x-on:error="erroPreview = true"
-                            alt="Prévia da foto do equipamento"
-                            class="h-32 w-32 object-cover rounded-md border border-border"
-                        >
-                        <p x-show="erroPreview" class="text-sm text-ink-muted">Não foi possível carregar a prévia dessa URL.</p>
+                        <img src="{{ $novaFoto->temporaryUrl() }}" alt="Prévia da nova foto" class="h-32 w-32 object-cover rounded-md border border-border">
+                        <button type="button" wire:click="$set('novaFoto', null)" class="mt-2 block text-sm text-ink-muted hover:text-ink">
+                            Cancelar
+                        </button>
                     </div>
-                </template>
+                @elseif ($novaFoto)
+                    <div class="mt-3">
+                        <p class="text-sm text-ink-muted">Arquivo selecionado não é uma imagem válida.</p>
+                        <button type="button" wire:click="$set('novaFoto', null)" class="mt-2 block text-sm text-ink-muted hover:text-ink">
+                            Cancelar
+                        </button>
+                    </div>
+                @elseif ($fotoAtualUrl)
+                    <div class="mt-3">
+                        <img src="{{ $fotoAtualUrl }}" alt="Foto atual do equipamento" class="h-32 w-32 object-cover rounded-md border border-border">
+                        <div class="mt-2 flex gap-4">
+                            <label class="text-sm font-medium text-brand hover:text-brand-dark cursor-pointer">
+                                Substituir
+                                <input type="file" wire:model="novaFoto" accept="image/jpeg,image/png,image/webp" class="hidden">
+                            </label>
+                            <button type="button" wire:click="removerFotoAtual" class="text-sm text-status-cancelado hover:opacity-75">
+                                Remover
+                            </button>
+                        </div>
+                    </div>
+                @else
+                    <label class="mt-1 inline-flex items-center px-4 py-2 bg-brand hover:bg-brand-dark rounded-md font-semibold text-xs text-white uppercase tracking-widest transition cursor-pointer">
+                        Selecionar foto
+                        <input type="file" wire:model="novaFoto" accept="image/jpeg,image/png,image/webp" class="hidden">
+                    </label>
+                @endif
+
+                <p class="mt-1 text-xs text-ink-muted">JPG, PNG ou WEBP, até 2MB.</p>
+                <x-input-error :messages="$errors->get('novaFoto')" class="mt-2" />
             </div>
         </div>
 

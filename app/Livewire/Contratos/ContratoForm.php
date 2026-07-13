@@ -139,6 +139,7 @@ class ContratoForm extends Component
     public function render()
     {
         $ativosDisponiveis = Ativo::query()
+            ->with('tipoAtivo')
             ->where('status', StatusAtivo::DISPONIVEL)
             ->when($this->buscaAtivo, fn ($query) => $query->where('nome', 'like', "%{$this->buscaAtivo}%"))
             ->orderBy('nome')
@@ -152,7 +153,7 @@ class ContratoForm extends Component
 
         return view('livewire.contratos.contrato-form', [
             'ativosDisponiveis' => $ativosDisponiveis,
-            'ativoSelecionado' => $this->ativoId ? Ativo::find($this->ativoId) : null,
+            'ativoSelecionado' => $this->ativoId ? Ativo::with('tipoAtivo')->find($this->ativoId) : null,
             'clientesFiltrados' => $clientesFiltrados,
             'clienteSelecionado' => $this->clienteId ? Cliente::find($this->clienteId) : null,
         ]);

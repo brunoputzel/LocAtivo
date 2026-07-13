@@ -86,7 +86,7 @@
                             <tr wire:key="ativo-{{ $ativo->id }}" class="hover:bg-surface">
                                 <td class="px-4 py-3"><x-status-badge :status="$ativo->status" /></td>
                                 <td class="px-4 py-3 text-ink">{{ $ativo->nome }}</td>
-                                <td class="px-4 py-3 text-ink-muted">{{ $ativo->tipo }}</td>
+                                <td class="px-4 py-3 text-ink-muted">{{ $ativo->tipoAtivo?->nome }}</td>
                                 <td class="px-4 py-3 text-ink-muted">{{ $ativo->modelo }}</td>
                                 <td class="px-4 py-3 font-mono text-ink-muted">{{ $ativo->numero_serie }}</td>
                                 <td class="px-4 py-3 font-mono text-ink-muted">{{ number_format($ativo->horimetro, 2) }}</td>
